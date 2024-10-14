@@ -1,5 +1,9 @@
 # Gitignore for STM32CubeIDE copied from https://github.com/github/gitignore/blob/master/C.gitignore
 
+/.settings/
+/Debug/
+*.launch
+
 # Prerequisites
 *.d
 
