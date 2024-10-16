@@ -60,6 +60,17 @@ static void MX_SPI1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+int16_t max(int16_t a, int16_t b)
+{
+	if(a > b)
+	{
+		return a;
+	}
+	else
+	{
+		return b;
+	}
+}
 
 /* USER CODE END 0 */
 
@@ -103,56 +114,97 @@ int main(void)
 
   LH128R_init(&hspi1, GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_7, GPIOC, GPIO_PIN_6);
 
-  //pixel_data_t pixel_data[240];
-  pixel_data_t pixel_data_b[240*2];
-  pixel_data_t pixel_data_w[240];
-  memset(pixel_data_b, 0, sizeof(pixel_data_b));
-  memset(pixel_data_w, 255, sizeof(pixel_data_w));
 
 
-  //LH128R_set_and_write_to_area(100, 100, 150, 150, pixel_data);
-  uint8_t cycle = 1;
+  uint8_t pixel_data[240*240*3];
+
+  LH128R_set_area(0, 0, 240, 240);
+  memset(pixel_data, 255, sizeof(pixel_data));
+  LH128R_write_to_area(pixel_data, sizeof(pixel_data)/4);
+  LH128R_write_to_area(pixel_data+(sizeof(pixel_data)/4), sizeof(pixel_data)/4);
+  LH128R_write_to_area(pixel_data+(sizeof(pixel_data)/2), sizeof(pixel_data)/4);
+  LH128R_write_to_area(pixel_data+(sizeof(pixel_data)/4*3), sizeof(pixel_data)/4);
+
   while(1)
   {
-	  LH128R_set_area(0, 0, SQ_SIZE-1, SQ_SIZE-1);
-	  if(cycle)
+	  for(int radius = 0; radius < 300; radius += 4)
 	  {
-		  for(uint8_t i = 0; i < SQ_SIZE/2; i++)
-		  {
-			  LH128R_write_to_area(pixel_data_b, sizeof(pixel_data_b));
-		  }
-	  }
-	  else
-	  {
-		  for(uint8_t i = 0; i < SQ_SIZE; i++)
-		  {
-			  LH128R_write_to_area(pixel_data_w, sizeof(pixel_data_w));
-		  }
-	  }
-	  cycle = !cycle;
-	  HAL_Delay(500);
+		  int thickness = 3;  // Thickness of the circle line
+		  int outerRadiusSquared = (radius + thickness) * (radius + thickness);
+		  int innerRadiusSquared = (radius - thickness) * (radius - thickness);
 
+		  for (int y = 0; y < 240; y++)
+		  {
+
+			  int dy = y - 120;
+			  for (int x = 0; x < 240; x++)
+			  {
+				  int dx = x - 120;
+				  int distSquared = dx * dx + dy * dy;
+
+				  // Calculate the index in the pixel data array
+				  int idx = (y * 240 + x) * 3;
+
+				  // Check if the pixel is within the ring (circle with thickness)
+				  if ((distSquared >= innerRadiusSquared) && (distSquared <= outerRadiusSquared)) {
+					  // Set the pixel to white
+					  pixel_data[idx] = 255;     // Red
+					  pixel_data[idx + 1] = 255; // Green
+					  pixel_data[idx + 2] = 255; // Blue
+				  }
+				  else
+				  {
+					  pixel_data[idx] = 0;     // Red
+					  pixel_data[idx + 1] = 0; // Green
+					  pixel_data[idx + 2] = 0; // Blue
+				  }
+			  }
+		  }
+
+		  LH128R_set_area(0, 0, 240-1, 240-1);
+		  LH128R_write_to_area(pixel_data, sizeof(pixel_data)/4);
+		  LH128R_write_to_area(pixel_data+(sizeof(pixel_data)/4), sizeof(pixel_data)/4);
+		  LH128R_write_to_area(pixel_data+(sizeof(pixel_data)/2), sizeof(pixel_data)/4);
+		  LH128R_write_to_area(pixel_data+(sizeof(pixel_data)/4*3), sizeof(pixel_data)/4);
+
+	  }
   }
-//  uint8_t third = 255;
+
+
+
+  /* MAX FRAME SPEED TEST */
+//  uint8_t pixel_data1[120*120*3];
+//  memset(pixel_data1, 255, sizeof(pixel_data1));
+//  uint8_t pixel_data[120*120*3];
+//  memset(pixel_data, 0, sizeof(pixel_data));
+//
+//
+//  //LH128R_set_and_write_to_area(100, 100, 150, 150, pixel_data);
+//  uint8_t cycle = 1;
 //  while(1)
 //  {
-//	LH128R_set_area(0, 0, SQ_SIZE-1, SQ_SIZE-1);
-//	for(uint8_t i = 0; i < SQ_SIZE; i++)
-//	{
-//		for(uint8_t j = 0; j < SQ_SIZE; j++)
-//		{
-//			pixel_data[j].r = i;
-//			pixel_data[j].g = j;
-//			pixel_data[j].b = third;
-////			if((i == SQ_SIZE/2) && (j == SQ_SIZE/2))
-////			{
-////				HAL_Delay(500);
-////			}
-//		}
-//		LH128R_write_to_area(pixel_data, SQ_SIZE);
-//		//send_spi_data(pixel_data, SQ_SIZE*3);
-//	}
-//	third-=200;
+//
+//	  LH128R_set_area(0, 0, SQ_SIZE-1, SQ_SIZE-1);
+//	  if(cycle)
+//	  {
+//		  LH128R_write_to_area(pixel_data1, sizeof(pixel_data1));
+//		  LH128R_write_to_area(pixel_data1, sizeof(pixel_data1));
+//		  LH128R_write_to_area(pixel_data1, sizeof(pixel_data1));
+//		  LH128R_write_to_area(pixel_data1, sizeof(pixel_data1));
+//		  //memset(pixel_data, 0, sizeof(pixel_data));
+//
+//	  }
+//	  else
+//	  {
+//		  LH128R_write_to_area(pixel_data, sizeof(pixel_data));
+//		  LH128R_write_to_area(pixel_data, sizeof(pixel_data));
+//		  LH128R_write_to_area(pixel_data, sizeof(pixel_data));
+//		  LH128R_write_to_area(pixel_data, sizeof(pixel_data));
+//		  //memset(pixel_data, 255, sizeof(pixel_data));
+//	  }
+//	  cycle = !cycle;
+//	  //HAL_Delay(500);
+//
 //  }
 
 

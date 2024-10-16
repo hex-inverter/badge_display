@@ -32,9 +32,9 @@ void LH128R_set_and_write_to_area(uint16_t x_start, uint16_t y_start, uint16_t x
 
 void LH128R_set_area(uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end);
 
-void LH128R_write_to_area(pixel_data_t* data_to_write, uint16_t data_size);
+void LH128R_write_to_area(uint8_t* data_to_write, uint16_t data_size);
 
-void send_spi_data(pixel_data_t* pixel, uint16_t size_in_bytes);
+void send_spi_data(uint8_t* pixel, uint16_t size_in_bytes);
 
 
 #endif /* LH128R_DISPLAY_LH128R_H_ */

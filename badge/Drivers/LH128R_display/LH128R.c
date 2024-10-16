@@ -41,9 +41,9 @@ void generate_spi_packet(pixel_data_t* pixel)
 	send_data(spi_data, sizeof(spi_data));
 }
 
-void send_spi_data(pixel_data_t* pixel, uint16_t size_in_bytes)
+void send_spi_data(uint8_t* data, uint16_t size_in_bytes)
 {
-	send_data((uint8_t*) pixel, size_in_bytes);
+	send_data(data, size_in_bytes);
 }
 
 /* TODO: change return value */
@@ -361,7 +361,7 @@ void send_data(uint8_t* data, uint16_t size)
 {
 	HAL_GPIO_WritePin(cs_port, cs_pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(dc_port, dc_pin, GPIO_PIN_SET);
-	HAL_SPI_Transmit(spi_handler, data, size, 1000);
+	HAL_SPI_Transmit(spi_handler, data, size, 0xFFFFFFFF);
 	HAL_GPIO_WritePin(cs_port, cs_pin, GPIO_PIN_SET);
 }
 
@@ -407,7 +407,7 @@ void LH128R_set_area(uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_
 }
 
 
-void LH128R_write_to_area(pixel_data_t* data_to_write, uint16_t data_size)
+void LH128R_write_to_area(uint8_t* data_to_write, uint16_t data_size)
 {
 	if(first_write_after_frame_set_flag)
 	{
@@ -420,7 +420,7 @@ void LH128R_write_to_area(pixel_data_t* data_to_write, uint16_t data_size)
 		send_command(WRITE_DATA_CONT);
 	}
 
-	send_spi_data(data_to_write, data_size*3);
+	send_spi_data(data_to_write, data_size);
 
 //	for(uint16_t i = 0; i < data_size; i++)
 //	{
