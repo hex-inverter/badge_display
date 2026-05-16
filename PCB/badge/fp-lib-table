@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "display_custom")(type "KiCad")(uri "E:/DRIVE/!PROJEKTI/circular_display/PCB/footprints/display_custom.pretty")(options "")(descr ""))
+)

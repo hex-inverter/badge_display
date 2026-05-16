@@ -6,6 +6,12 @@
  */
 #include <stdint.h>
 
+/* TODO: move to *.h file */
+typedef struct {
+	RETURN_OK = 0,
+	
+} return_status_t;
+
 
 typedef struct {
 	/* DATA FROM HEADER */
@@ -107,10 +113,16 @@ uint8_t create_new_table_extension_element(color_table_extension_t* previous_cod
 	extension_table_size++;
 }
 
-/* Recursive delete function */
-uint8_t delete_table_extension()
+/* Recursive function to free all mallocs. Again, not the most efficient way to do this, but I like the solution. */
+void delete_table_extension(color_table_extension_t* current_entry, uint16_t remaining_entries)
 {
-	color_table_extension_t* next_table = last_table_entry->indexes;
+	/* TODO: check offset by one here */
+	if(remaining_entries > 0)
+	{
+		delete_table_extension(current_entry->next_element, remaining_entries-1);
+		free((void*) current_entry->next_element);
+	}
+	free((void*) current_entry->indexes);
 }
 
 

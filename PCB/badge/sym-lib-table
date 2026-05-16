@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "AT25SF128A-SHB-T")(type "KiCad")(uri "E:/DRIVE/!PROJEKTI/circular_display/PCB/footprints/AT25SF128A-SHB-T.kicad_sym")(options "")(descr ""))
+)
